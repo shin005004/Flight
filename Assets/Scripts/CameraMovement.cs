@@ -17,15 +17,15 @@ public class CameraMovement : MonoBehaviour
     {
         
     }
-
+    
     void FixedUpdate()
     {
         Vector3 pos = new Vector3();
 
-        pos.x = cameraHolder.position.x;
-        pos.y = cameraHolder.position.y + height;
-        pos.z = cameraHolder.position.z + zett;
+        pos.x = 0f;
+        pos.y = height;
+        pos.z = zett;
 
-        cameraPlace.position = Vector3.SmoothDamp(cameraPlace.position, pos, ref velocity, smooth);
+        cameraPlace.localPosition = Vector3.SmoothDamp(cameraPlace.localPosition, pos, ref velocity, smooth);
     }
 }
