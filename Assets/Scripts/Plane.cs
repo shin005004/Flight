@@ -17,19 +17,23 @@ public class Plane : MonoBehaviour
     public float Yaw { set { yaw = Mathf.Clamp(value, -1f, 1f); } get { return yaw; } }
     public float Roll { set { roll = Mathf.Clamp(value, -1f, 1f); } get { return roll; } }
 
-    public float rollDeadSpace = .25f;
+    public float mouseSensetivity = 1.0f;
+    public float rollDeadSpace = 0.0f;
     public float pitchDeadSpace = .25f;
+    public float yawDeadSpace = 0.0f;
 
     public bool invertPitch = false;
 
     private bool rollActive = false;
     private bool pitchActive = false;
+    private bool yawActive = false;
 
     private Rigidbody rigid;
 
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
@@ -38,20 +42,29 @@ public class Plane : MonoBehaviour
         pitchActive = false;
 
         float keyboardRoll = Input.GetAxis("Horizontal");
-        if (Mathf.Abs(keyboardRoll) > rollDeadSpace)
+        float mouseRoll = Input.GetAxis("Mouse X") * mouseSensetivity * Time.deltaTime;
+
+        if (Mathf.Abs(mouseRoll) > rollDeadSpace)
         {
             rollActive = true;
         }
 
-        float keyboardPitch = Input.GetAxis("Vertical");
+        // float keyboardPitch = Input.GetAxis("Vertical");
+        float keyboardPitch = Input.GetAxis("Pitch");
         if (Mathf.Abs(keyboardPitch) > pitchDeadSpace)
         {
             pitchActive = true;
-            rollActive = true;
         }
 
-        yaw = 0f;
-        pitch = (pitchActive) ? keyboardPitch : 0f;
+        float keyboardYaw = Input.GetAxis("Yaw");
+        if (Mathf.Abs(keyboardYaw) > yawDeadSpace)
+        {
+            yawActive = true;
+        }
+
+        yaw = (yawActive) ? keyboardYaw : 0f;
+
+        pitch = (pitchActive) ? mouseRoll : 0f;
         roll = (rollActive) ? keyboardRoll : 0f ;
         pitch = (invertPitch) ? -pitch : pitch;
     }
