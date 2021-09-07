@@ -1,0 +1,9 @@
+UserSettings/
+Packages/
+.vs/
+Library/
+Logs/
+obj/
+/.vsconfig
+/Assembly-CSharp
+
