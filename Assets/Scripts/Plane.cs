@@ -9,7 +9,7 @@ public class Plane : MonoBehaviour
     CameraMovement cameraMovement;
 
     // Plane Property
-    public float thrust = 100f;
+    public float thrust = 400f;
     public Vector3 turnTorque = new Vector3(90f, 25f, 45f);
     public float forceMult = 10f;
 
@@ -53,7 +53,7 @@ public class Plane : MonoBehaviour
 
     private void Start()
     {
-        cameraMovement = GameObject.Find("Plane").GetComponent<CameraMovement>();
+        cameraMovement = GameManager.gameManager.player.GetComponent<CameraMovement>();
     }
 
     private void Update()
@@ -66,6 +66,7 @@ public class Plane : MonoBehaviour
 
         if (Mathf.Abs(mouseRoll) > rollDeadSpace)
         {
+            cameraMovement.horizontal = (mouseRoll > 0) ? 0.2f : -0.2f;
             rollActive = true;
         }
 
@@ -74,8 +75,7 @@ public class Plane : MonoBehaviour
         if (Mathf.Abs(keyboardPitch) > pitchDeadSpace)
         {
             pitchActive = true;
-
-            cameraMovement.height = (keyboardPitch > 0) ? 3f : -1f;
+            cameraMovement.height = (keyboardPitch > 0) ? 0.5f : -0.5f;
         }
         else cameraMovement.height = 0f;
 
@@ -83,7 +83,9 @@ public class Plane : MonoBehaviour
         if (Mathf.Abs(keyboardYaw) > yawDeadSpace)
         {
             yawActive = true;
+            cameraMovement.horizontal = (keyboardYaw > 0) ? 0.2f : -0.2f;
         }
+        else cameraMovement.horizontal = 0f;
 
         // if (Mathf.Abs(keyboardThrust) > 0) { }
 
@@ -99,17 +101,17 @@ public class Plane : MonoBehaviour
 
     private void ThrustUpdate(float keyboardThrust)
     {
-        if (thrust > 100f)
+        if (thrust > 400f)
         {
             thrustSmooth = 6.0f;
-            thrust = Mathf.SmoothDamp(thrust, 100, ref thrustVelocity, thrustSmooth);
+            thrust = Mathf.SmoothDamp(thrust, 300, ref thrustVelocity, thrustSmooth);
             cameraMovement.zett = 0f;
         }
         if (keyboardThrust > 0)
         {
             thrustSmooth = 3.0f;
-            thrust = Mathf.SmoothDamp(thrust, 200, ref thrustVelocity, thrustSmooth);
-            cameraMovement.zett = -5f;
+            thrust = Mathf.SmoothDamp(thrust, 600, ref thrustVelocity, thrustSmooth);
+            cameraMovement.zett = -1f;
         }
         if (keyboardThrust < 0)
         {

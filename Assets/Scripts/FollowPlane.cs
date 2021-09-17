@@ -7,8 +7,7 @@ public class FollowPlane : MonoBehaviour
     
     private Rigidbody rigid;
 
-    private Transform aircraft;
-    public Transform targetAircraft;
+    public Transform targetAircraft = null;
 
     public float thrust = 100f;
     public Vector3 turnTorque = new Vector3(90f, 25f, 45f);
@@ -21,32 +20,58 @@ public class FollowPlane : MonoBehaviour
     private float yaw = 0f;
     private float roll = 0f;
 
+
+    // Missle Logic
+    public float angleLimit = 180f;
+    public bool lockedOnTarget = true;
+
     public void Awake()
     {
         rigid = GetComponent<Rigidbody>();
     }
 
+    public void Start()
+    {
+        if (targetAircraft != null) lockedOnTarget = true;
+        if (lockedOnTarget)
+            if (targetAircraft.name == "Player")
+                GameManager.gameManager.playerTargeting += 1.0f;
+    }
+
     private void Update()
     {
         // Calculate the autopilot stick inputs.
-        float autoYaw = 0f;
-        float autoPitch = 0f;
-        float autoRoll = 0f;
+        // float autoYaw = 0f;
+        // float autoPitch = 0f;
+        // float autoRoll = 0f;
 
-        // Vector3 targetDirection = (targetAircraft.position - transform.position).normalized;
-        Vector3 targetDirection = targetAircraft.position;
-        RunAutopilot(targetDirection, out autoYaw, out autoPitch, out autoRoll);
+        yaw = 0f;
+        pitch = 0f;
+        roll = 0f;
 
-        yaw = autoYaw;
-        pitch = autoPitch;
-        roll = autoRoll;
+        if(lockedOnTarget)
+        {
+            Vector3 targetDirection = targetAircraft.position;
+            RunAutopilot(targetDirection, out yaw, out pitch, out roll);
+        }    
+
+        // yaw = autoYaw;
+        // pitch = autoPitch;
+        // roll = autoRoll;
     }
 
     private void RunAutopilot(Vector3 flyTarget, out float yaw, out float pitch, out float roll)
     {
-        
         var localFlyTarget = transform.InverseTransformPoint(flyTarget).normalized * sensitivity;
         var angleOffTarget = Vector3.Angle(transform.forward, flyTarget - transform.position);
+
+        if (angleOffTarget > angleLimit)
+        {
+            lockedOnTarget = false;
+            yaw = pitch = roll = 0;
+            GameManager.gameManager.playerTargeting -= 1.0f;
+            return;
+        }
 
         yaw = Mathf.Clamp(localFlyTarget.x, -1f, 1f);
         pitch = -Mathf.Clamp(localFlyTarget.y, -1f, 1f);
@@ -63,6 +88,11 @@ public class FollowPlane : MonoBehaviour
         rigid.AddRelativeForce(Vector3.forward * thrust * forceMult, ForceMode.Force);
         rigid.AddRelativeTorque(new Vector3(turnTorque.x * pitch, turnTorque.y * yaw, 
             -turnTorque.z * roll) * forceMult, ForceMode.Force);
+    }
+
+    private void TimeDestroyed()
+    {
+
     }
 }
 

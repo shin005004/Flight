@@ -9,6 +9,7 @@ public class CameraMovement : MonoBehaviour
     public float smooth = 0.3f;
 
     public float height = 10f;
+    public float horizontal = 0f;
     public float zett = 0f;
 
     private Vector3 velocity = Vector3.zero;
@@ -22,7 +23,7 @@ public class CameraMovement : MonoBehaviour
     {
         Vector3 pos = new Vector3();
 
-        pos.x = 0f;
+        pos.x = horizontal;
         pos.y = height;
         pos.z = zett;
 
